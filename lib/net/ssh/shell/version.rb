@@ -7,7 +7,7 @@ module Net; module SSH; module Shell
     MAJOR = 0
 
     # The minor component of the library's version
-    MINOR = 1
+    MINOR = 2
 
     # The tiny component of the library's version
     TINY  = 0
