@@ -67,7 +67,7 @@ module Net
         process = klass.new(self, command, callback)
         process.run if processes.empty?
         processes << process
-        return process
+        process
       end
 
       def subshell(command, &callback)
@@ -77,7 +77,7 @@ module Net
       def execute!(command, &callback)
         execute(command, &callback)
         wait!
-	return process
+        process
       end
 
       def busy?
@@ -112,41 +112,41 @@ module Net
 
       private
 
-        def open_succeeded(channel)
-          @state = :pty
-          channel.on_close(&method(:on_channel_close))
-          channel.request_pty(:modes => { Net::SSH::Connection::Term::ECHO => 0 }, &method(:pty_requested))
-        end
+      def open_succeeded(channel)
+        @state = :pty
+        channel.on_close(&method(:on_channel_close))
+        channel.request_pty(:modes => { Net::SSH::Connection::Term::ECHO => 0 }, &method(:pty_requested))
+      end
 
-        def open_failed(channel, code, description)
-          @state = :closed
-          raise "could not open channel for process manager (#{description}, ##{code})"
-        end
+      def open_failed(channel, code, description)
+        @state = :closed
+        raise "could not open channel for process manager (#{description}, ##{code})"
+      end
 
-        def pty_requested(channel, success)
-          @state = :shell
-          raise "could not request pty for process manager" unless success
-          if shell == :default
-            channel.send_channel_request("shell", &method(:shell_requested))
-          else
-            channel.exec(shell, &method(:shell_requested))
-          end
+      def pty_requested(channel, success)
+        @state = :shell
+        raise "could not request pty for process manager" unless success
+        if shell == :default
+          channel.send_channel_request("shell", &method(:shell_requested))
+        else
+          channel.exec(shell, &method(:shell_requested))
         end
+      end
 
-        def shell_requested(channel, success)
-          @state = :initializing
-          raise "could not request shell for process manager" unless success
-          channel.on_data(&method(:look_for_initialization_done))
-          channel.send_data "export PS1=; echo #{separator} $?\n"
-        end
+      def shell_requested(channel, success)
+        @state = :initializing
+        raise "could not request shell for process manager" unless success
+        channel.on_data(&method(:look_for_initialization_done))
+        channel.send_data "export PS1=; echo #{separator} $?\n"
+      end
 
-        def look_for_initialization_done(channel, data)
-          if data.include?(separator)
-            @state = :open
-            @when_open.each { |callback| callback.call(self) }
-            @when_open.clear
-          end
+      def look_for_initialization_done(channel, data)
+        if data.include?(separator)
+          @state = :open
+          @when_open.each { |callback| callback.call(self) }
+          @when_open.clear
         end
+      end
     end
   end
 end
@@ -158,6 +158,6 @@ class Net::SSH::Connection::Session
   def shell(*args)
     shell = Net::SSH::Shell.new(self, *args)
     yield shell if block_given?
-    return shell
+    shell
   end
 end
