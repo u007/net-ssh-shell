@@ -1,5 +1,4 @@
 module Net; module SSH; class Shell
-
   class Process
     attr_reader :state
     attr_reader :command
@@ -86,39 +85,36 @@ module Net; module SSH; class Shell
       @on_finish = callback
     end
 
-    private
+    protected
 
-      def output!(data)
-        return unless @on_output
-        @on_output.call(self, data)
-      end
+    def output!(data)
+      @on_output.call(self, data) if @on_output
+    end
 
-      def on_stdout(ch, data)
-        if data.strip =~ /^#{manager.separator} (\d+)$/
-          before = $`
-          output!(before) unless before.empty?
-          finished!($1)
-        else
-          output!(data)
-        end
+    def on_stdout(ch, data)
+      if data.strip =~ /^#{manager.separator} (\d+)$/
+        before = $`
+        output!(before) unless before.empty?
+        finished!($1)
+      else
+        output!(data)
       end
+    end
 
-      def on_stderr(ch, type, data)
-        return unless @on_error_output
-        @on_error_output.call(self, data)
-      end
+    def on_stderr(ch, type, data)
+      @on_error_output.call(self, data) if @on_error_output
+    end
 
-      def on_close(ch)
-        manager.on_channel_close(ch)
-        finished!(-1)
-      end
+    def on_close(ch)
+      manager.on_channel_close(ch)
+      finished!(-1)
+    end
 
-      def finished!(status)
-        @state = :finished
-        @exit_status = status.to_i
-        @on_finish.call(self) if @on_finish
-        manager.child_finished(self)
-      end
+    def finished!(status)
+      @state = :finished
+      @exit_status = status.to_i
+      @on_finish.call(self) if @on_finish
+      manager.child_finished(self)
+    end
   end
-
 end; end; end
