@@ -1,6 +1,6 @@
 require 'net/ssh/version'
 
-module Net; module SSH; module Shell
+module Net; module SSH; class Shell
   # A trivial class for representing the version of this library.
   class Version < Net::SSH::Version
     # The major component of the library's version
