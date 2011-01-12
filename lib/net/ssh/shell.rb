@@ -67,9 +67,16 @@ module Net
         @on_process_run = callback
       end
 
-      def execute(command, klass=nil, &callback)
-        klass ||= default_process_class
-        process = klass.new(self, command, callback)
+      def execute(command, *args, &callback)
+        # The class is an optional second argument.
+        klass = default_process_class
+        klass = args.shift if args.first.is_a?(Class)
+
+        # The properties are expected to be the next argument.
+        props = {}
+        props = args.shift if args.first.is_a?(Hash)
+
+        process = klass.new(self, command, props, callback)
         processes << process
         run_next_process if processes.length == 1
         process

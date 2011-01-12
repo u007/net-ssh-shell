@@ -7,11 +7,11 @@ module Net; module SSH; class Shell
     attr_reader :exit_status
     attr_reader :properties
 
-    def initialize(manager, command, callback)
+    def initialize(manager, command, properties, callback)
       @command = command
       @manager = manager
       @callback = callback
-      @properties = {}
+      @properties = properties
       @on_output = nil
       @on_error_output = nil
       @on_finish = nil
