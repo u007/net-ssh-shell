@@ -65,8 +65,8 @@ module Net
       def execute(command, klass=nil, &callback)
         klass ||= default_process_class
         process = klass.new(self, command, callback)
-        process.run if processes.empty?
         processes << process
+        run_next_process if processes.length == 1
         process
       end
 
@@ -95,7 +95,7 @@ module Net
       def child_finished(child)
         channel.on_close(&method(:on_channel_close)) if !channel.nil?
         processes.delete(child)
-        processes.first.run if processes.any?
+        run_next_process
       end
 
       def separator
@@ -111,6 +111,10 @@ module Net
       end
 
       private
+
+      def run_next_process
+        processes.first.run if processes.any?
+      end
 
       def open_succeeded(channel)
         @state = :pty
