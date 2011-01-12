@@ -19,6 +19,7 @@ module Net
         @state = :closed
         @processes = []
         @when_open = []
+        @on_process_run = nil
         @default_process_class = Net::SSH::Shell::Process
         open
       end
@@ -60,6 +61,10 @@ module Net
 
       def opening?
         !open? && !closed?
+      end
+
+      def on_process_run(&callback)
+        @on_process_run = callback
       end
 
       def execute(command, klass=nil, &callback)
@@ -113,7 +118,11 @@ module Net
       private
 
       def run_next_process
-        processes.first.run if processes.any?
+        if processes.any?
+          process = processes.first
+          @on_process_run.call(process) if @on_process_run
+          process.run
+        end
       end
 
       def open_succeeded(channel)
