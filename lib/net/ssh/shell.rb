@@ -120,7 +120,7 @@ module Net
       def run_next_process
         if processes.any?
           process = processes.first
-          @on_process_run.call(process) if @on_process_run
+          @on_process_run.call(self, process) if @on_process_run
           process.run
         end
       end
