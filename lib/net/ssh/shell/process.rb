@@ -12,8 +12,8 @@ module Net; module SSH; class Shell
       @manager = manager
       @callback = callback
       @properties = {}
-      @on_output = Proc.new { |p, data| print(data) }
-      @on_error_output = Proc.new { |p, data| print(data) }
+      @on_output = nil
+      @on_error_output = nil
       @on_finish = nil
       @state = :new
     end
