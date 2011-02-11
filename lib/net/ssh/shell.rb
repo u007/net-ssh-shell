@@ -29,6 +29,7 @@ module Net
           @state = :opening
           @channel = session.open_channel(&method(:open_succeeded))
           @channel.on_open_failed(&method(:open_failed))
+          @channel.on_request('exit-status', &method(:on_exit_status))
         end
         when_open(&callback) if callback
         self
@@ -141,6 +142,12 @@ module Net
       def open_failed(channel, code, description)
         @state = :closed
         raise "could not open channel for process manager (#{description}, ##{code})"
+      end
+
+      def on_exit_status(channel, data)
+        unless data.read_long == 0
+          raise "the shell exited unexpectedly"
+        end
       end
 
       def pty_requested(channel, success)
