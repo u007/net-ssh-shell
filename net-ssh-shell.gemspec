@@ -2,7 +2,7 @@ require File.expand_path("../lib/net/ssh/shell/version", __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = "net-ssh-shell"
-  s.version       = Net::SSH::Shell::Version::STRING
+  s.version       = Net::SSH::Shell::VERSION
   s.platform      = Gem::Platform::RUBY
   s.authors       = ["Jamis Buck"]
   s.email         = ["jamis@jamisbuck.org"]
