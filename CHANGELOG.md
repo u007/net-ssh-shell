@@ -1,5 +1,6 @@
 ## 0.2.0 (unreleased)
 
+  - Loosen regex on `on_stdout` [GH-1]
   - Capture stderr from shell. This won't capture the stderr of the processes
     running. Instead it will just capture any error output from the shell process.
   - Ability to specify the default process class to use for `Shell#execute`
