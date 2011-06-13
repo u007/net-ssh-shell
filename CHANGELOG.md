@@ -1,4 +1,8 @@
-## 0.2.0 (unreleased)
+## 0.3.0 (unreleased)
+
+
+
+## 0.2.0 (June 13, 2011)
 
   - Loosen regex on `on_stdout` [GH-1]
   - Capture stderr from shell. This won't capture the stderr of the processes
